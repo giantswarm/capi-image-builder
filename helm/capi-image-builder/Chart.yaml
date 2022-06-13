@@ -1,0 +1,17 @@
+apiVersion: v2
+
+name: capi-image-builder
+version: [[ .Version ]]
+appVersion: 0.0.1
+
+description: App to handle building of CAPI VM images for various providers
+
+home: https://github.com/giantswarm/capi-image-builder
+
+# If you have an icon/logo, you should add it to https://github.com/giantswarm/web-assets
+# and set the final URL as a value here and uncomment.
+#icon: https://s.giantswarm.io/app-icons/example-app/1/light.svg
+
+sources:
+- https://github.com/some-org/some-repo
+

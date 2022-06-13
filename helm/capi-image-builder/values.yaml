@@ -1,6 +1,6 @@
 # TEMPLATE-APP: This is set as a reasonable default, feel free to change.
 
-name: {APP-NAME}
+name: capi-image-builder
 serviceType: managed
 
 project:
@@ -9,6 +9,6 @@ project:
 
 image:
   registry: quay.io
-  name: giantswarm/{APP-NAME}
+  name: giantswarm/capi-image-builder
   tag: v0.0.1
   pullPolicy: IfNotPresent
