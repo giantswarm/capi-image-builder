@@ -1,0 +1,83 @@
+{{ if eq .Values.provider.kind "openstack" }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+ name: build-bot
+secrets:
+ - name: local-registry
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: k8s-build-event-listener
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - name: k8s-build
+      bindings:
+        - ref: k8s-build-pipeline-binding
+      template:
+        ref: k8s-build-trigger-template
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: k8s-build-pipeline-binding
+spec:
+  params:
+  - name: k8sVersion
+    value: $(body.k8s.version)
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: k8s-build-trigger-template
+spec:
+  params:
+  - name: k8sVersion
+
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: k8s-build-$(tt.params.k8sVersion)
+    spec:
+      pipelineRef:
+        name: k8s-build
+      params:
+      - name: k8sVersion
+        value: $(tt.params.k8sVersion)
+      
+      serviceAccountName: build-bot
+      timeouts:
+        pipeline: "8h4m0s"
+        tasks: "6h0m0s"
+      workspaces:
+        - name: source-ws
+          subPath: source
+          volumeClaimTemplate:
+            metadata:
+              name: k8s-build-image-ws-pvc
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 5Gi
+        - name: output-ws  
+          volumeClaimTemplate:
+            metadata:
+              name: output-$(tt.params.k8sVersion)
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 5Gi
+        - name: secrets
+          secret:
+            secretName: aws-credentials
+{{ end }}

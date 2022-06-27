@@ -1,0 +1,57 @@
+{{ if eq .Values.provider.kind "openstack" }}
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: k8s-build
+spec:
+  params:
+  - name: k8sVersion
+  workspaces:
+  - name: output-ws
+  - name: secrets
+  tasks:
+    - name: build-capo-openstack-image
+      timeout: 6h
+      taskRef:
+        name: build-capi-image
+      params:
+        - name: ACCELERATOR
+          value: 'none'
+        - name: KUBERNETES_VERSION
+          value: $(params.k8sVersion)
+        - name: PACKER_LOG
+          value: '1'
+        - name: build-image
+          value: "{{.Values.image.registry}}/{{.Values.image.name}}/{{.Values.image.tag}}"
+        - name: CPUS
+          value: '2'
+        - name: MEMORY
+          value: '4096'
+          
+      workspaces:
+      - name: output
+        workspace: output-ws
+
+    - name: s3-upload-image
+      taskRef:
+        name: aws-cli
+      runAfter:
+      - build-capo-openstack-image
+      params:
+      - name: SCRIPT
+        value: |
+          set -x
+          aws $1 $(cat /root/.aws/cli-params) cp $(workspaces.source.path)/$2/$2 s3://$(cat /root/.aws/bucket-name)/$2/
+          aws $1 $(cat /root/.aws/cli-params) cp $(workspaces.source.path)/$2/$2.sha256sums s3://$(cat /root/.aws/bucket-name)/$2/
+      - name: ARGS
+        value:
+        - s3
+        - ubuntu-2004-kube-v$(params.k8sVersion)
+      workspaces:
+      - name: secrets
+        workspace: secrets
+      - name: source
+        workspace: output-ws
+        
+{{ end }}

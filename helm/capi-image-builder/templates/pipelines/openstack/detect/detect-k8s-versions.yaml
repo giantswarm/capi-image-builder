@@ -1,0 +1,117 @@
+{{ if eq .Values.provider.kind "openstack" }}
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: detect-k8s-versions
+spec:
+  params:
+  - name: excludeReleasesList
+  workspaces:
+  - name: secrets
+  results:
+  - name: k8s-releases
+    value: $(tasks.get-k8s-releases.results.releases)
+  tasks:
+    - name: get-k8s-releases
+      taskSpec:
+        results:
+        - name: releases
+        steps:
+        - name: get-k8s-releases
+          onError: continue
+          image: curlimages/curl
+          script: |-
+            curl --silent "https://api.github.com/repos/kubernetes/kubernetes/releases" | \
+              grep tag_name | \
+              awk -F '\"' '{print $4}' > $(results.releases.path)
+            cat -e $(results.releases.path)
+
+    - name: get-s3-existing-image
+      workspaces:
+      - name: secrets
+        workspace: secrets
+      taskSpec:
+        results:
+        - name: existingS3
+        workspaces:
+          - name: secrets
+            optional: true
+            mountPath: /root/.aws
+        params:
+        - name: SCRIPT
+          default: |-
+            aws s3 $(cat /root/.aws/cli-params) ls s3://$(cat /root/.aws/bucket-name)/ | \
+              grep ubuntu-2004-kube | \
+              sed 's/\///g' |\
+              awk -F 'ubuntu-2004-kube-' '{print $2}' \
+              > $(results.existingS3.path);
+            cat -e $(results.existingS3.path);
+        - name: ARGS
+          default:
+          - s3
+        steps:
+          - name: get-s3-existing-image
+            image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
+            script: "$(params.SCRIPT)"
+            args:
+              - "$(params.ARGS)"
+              
+    - name: start-k8s-build
+      runAfter:
+        - get-k8s-releases
+        - get-s3-existing-image
+      params:
+      - name: releases
+        value: "$(tasks.get-k8s-releases.results.releases)"
+      - name: existingReleases
+        value: "$(tasks.get-s3-existing-image.results.existingS3)"
+      - name: excludeReleasesList
+        value: "$(params.excludeReleasesList)"
+      taskSpec:
+        params:
+        - name: releases
+        - name: existingReleases
+        - name: excludeReleasesList
+        steps:
+        - name: detect-start-k8s-build
+          onError: continue
+          env:
+          - name: releases
+            value: "$(params.releases)"
+          - name: existingReleases
+            value: "$(params.existingReleases)"
+          - name: excludeReleasesList
+            value: "$(params.excludeReleasesList)"
+          image: curlimages/curl
+          script: |-
+            #set -x
+            #echo "$releases" 
+            #echo $existingReleases 
+            for release in $releases
+            do
+              echo "Release: $release";
+              if $( echo $existingReleases | grep -q "$release" ); then
+                echo "It's already there."
+              elif $( echo $excludeReleasesList | grep -q "$release" ); then
+                echo "It's in the exclude list."
+              else
+                echo "Need to add release:  $release"
+                curl -X POST \
+                  --silent \
+                  http://el-k8s-build-event-listener.default.svc.cluster.local:8080 \
+                  -H 'Content-Type: application/json' \
+                  -d "{
+                    \"k8s\":
+                    {
+                      \"version\": \"${release#v}\"
+                    }
+                  }"
+                  
+                  #TODO add concurrency since tekton doesn't support it.
+                  echo "Triggering only 1 build at a time"
+                  exit 0
+              fi
+
+            done
+{{ end }}

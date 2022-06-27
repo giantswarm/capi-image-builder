@@ -1,7 +1,9 @@
+{{ if eq .Values.provider.kind "openstack" }}
+
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: build-capi-image
+  name: build-capo-image
 spec:
   params:
   - name: ACCELERATOR
@@ -72,6 +74,6 @@ spec:
       image: bash:5
       workingDir: $(workspaces.output.path)
       script: |
-        if [ -f "cluster-api-v$(params.KUBERNETES_VERSION)" ]; then
-          sha256sum cluster-api-v$(params.KUBERNETES_VERSION) > cluster-api-v$(params.KUBERNETES_VERSION).sha256sums
-        fi
+        (cd $(workspaces.output.path)/ubuntu-2004-kube-v${KUBERNETES_VERSION}/ && sha256sum ubuntu-2004-kube-v${KUBERNETES_VERSION} > ubuntu-2004-kube-v${KUBERNETES_VERSION}.sha256sums)
+
+{{ end }}

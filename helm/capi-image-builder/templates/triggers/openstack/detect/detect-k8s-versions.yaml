@@ -1,0 +1,69 @@
+ {{ if eq .Values.provider.kind "openstack" }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-triggers-sa
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: triggers-eventlistener-binding
+subjects:
+- kind: ServiceAccount
+  name: tekton-triggers-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-roles
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: triggers-eventlistener-clusterbinding
+subjects:
+- kind: ServiceAccount
+  name: tekton-triggers-sa
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-clusterroles
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: detect-k8s-versions-event-listener
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - name: detect-k8s-versions-cron-listener
+      template:
+        ref: detect-k8s-versions-trigger-template
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: detect-k8s-versions-trigger-template
+spec:
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: k8s-detect
+    spec:
+      params:
+      - name: excludeReleasesList
+        value: '{{ join " " .Values.k8s.excludeVersions }}'
+      pipelineRef:
+        name: detect-k8s-versions
+      workspaces:
+      - name: secrets
+        secret:
+          secretName: aws-credentials   
+
+{{ end }}
