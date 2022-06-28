@@ -23,7 +23,7 @@ spec:
         - name: PACKER_LOG
           value: '1'
         - name: build-image
-          value: "{{.Values.image.registry}}/{{.Values.image.name}}/{{.Values.image.tag}}"
+          value: "{{.Values.image.registry}}/{{.Values.image.name}}:{{.Values.image.tag}}"
         - name: CPUS
           value: '2'
         - name: MEMORY
