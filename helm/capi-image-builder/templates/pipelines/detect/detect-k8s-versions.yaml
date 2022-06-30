@@ -19,12 +19,13 @@ spec:
         steps:
         - name: get-k8s-releases
           onError: continue
-          image: curlimages/curl
+          image: quay.io/giantswarm/docker-kubectl:latest
           script: |-
-            curl --silent "https://api.github.com/repos/kubernetes/kubernetes/releases" | \
-              grep tag_name | \
-              awk -F '\"' '{print $4}' > $(results.releases.path)
-            cat -e $(results.releases.path)
+            curl "https://api.github.com/repos/kubernetes/kubernetes/releases?per_page=100" | \
+            	jq '.[] | select(.tag_name | test("^v1\\.[0-9]+\\.[0-9]+$")) | .tag_name' | \
+            	tee  $(results.releases.path)
+
+    
     {{ if .Values.output.s3.enabled }}
     - name: get-s3-existing-image
       workspaces:
@@ -104,7 +105,7 @@ spec:
 
               elif $( echo $release | grep -q "beta" ); then
                 echo "It's an beta release.. skipping."
-                
+
               else
                 echo "Need to add release:  $release"
                 curl -X POST \
