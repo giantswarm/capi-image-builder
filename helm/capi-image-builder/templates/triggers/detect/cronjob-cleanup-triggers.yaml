@@ -1,4 +1,4 @@
-{{ if eq .Values.tektonCleaner.enabled "true" }}
+{{ if eq .Values.tektonDetectCleaner.enabled "true" }}
 
 ---
 apiVersion: v1
