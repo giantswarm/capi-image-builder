@@ -1,5 +1,4 @@
 {{ if eq .Values.tektonCleaner.enabled "true" }}
-{{ if eq .Values.provider.kind "openstack" }}
 
 ---
 apiVersion: v1
@@ -60,5 +59,4 @@ spec:
                     | head -n -${NUM_TO_KEEP} \
                     | awk '{ print $2}')"
                     test -n "$TO_DELETE" && kubectl delete pipelinerun ${TO_DELETE} || true
-{{ end }}
 {{ end }}

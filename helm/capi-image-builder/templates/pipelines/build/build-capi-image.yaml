@@ -1,4 +1,3 @@
-{{ if eq .Values.provider.kind "openstack" }}
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
@@ -9,9 +8,11 @@ spec:
   - name: k8sVersion
   workspaces:
   - name: output-ws
+  {{ if .Values.output.s3.enabled }}
   - name: secrets
+  {{ end }}
   tasks:
-    - name: build-capo-openstack-image
+    - name: build-capi-image
       timeout: 6h
       taskRef:
         name: build-capi-image
@@ -28,16 +29,22 @@ spec:
           value: '2'
         - name: MEMORY
           value: '4096'
+
+        {{ if eq .Values.provider.kind "openstack" }}
+        - name: make-target
+          value: "build-qemu-ubuntu-2004"
+        {{ end }}
           
       workspaces:
       - name: output
         workspace: output-ws
 
+    {{ if .Values.output.s3.enabled }}
     - name: s3-upload-image
       taskRef:
         name: aws-cli
       runAfter:
-      - build-capo-openstack-image
+      - build-capi-image
       params:
       - name: SCRIPT
         value: |
@@ -53,5 +60,4 @@ spec:
         workspace: secrets
       - name: source
         workspace: output-ws
-        
-{{ end }}
+    {{ end }}

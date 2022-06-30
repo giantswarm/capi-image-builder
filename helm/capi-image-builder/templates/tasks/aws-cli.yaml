@@ -1,4 +1,4 @@
-{{ if eq .Values.provider.kind "openstack" }}
+{{ if .Values.output.s3.enabled }}
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task

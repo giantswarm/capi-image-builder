@@ -1,9 +1,7 @@
-{{ if eq .Values.provider.kind "openstack" }}
-
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: build-capo-image
+  name: build-capi-image
 spec:
   params:
   - name: ACCELERATOR
@@ -76,4 +74,3 @@ spec:
       script: |
         (cd $(workspaces.output.path)/ubuntu-2004-kube-v${KUBERNETES_VERSION}/ && sha256sum ubuntu-2004-kube-v${KUBERNETES_VERSION} > ubuntu-2004-kube-v${KUBERNETES_VERSION}.sha256sums)
 
-{{ end }}

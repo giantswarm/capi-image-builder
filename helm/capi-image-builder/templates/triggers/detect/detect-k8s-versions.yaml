@@ -1,4 +1,3 @@
- {{ if eq .Values.provider.kind "openstack" }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -62,8 +61,8 @@ spec:
       pipelineRef:
         name: detect-k8s-versions
       workspaces:
+      {{ if .Values.output.s3.enabled }}
       - name: secrets
         secret:
           secretName: aws-credentials   
-
-{{ end }}
+      {{ end }}

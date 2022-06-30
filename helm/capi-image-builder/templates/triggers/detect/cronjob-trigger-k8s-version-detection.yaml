@@ -1,10 +1,9 @@
- {{ if eq .Values.provider.kind "openstack" }}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: start-detect-k8s-version-cronjob
 spec:
-  schedule: "*/10 * * * *"
+  schedule: "0 * * * *"
   jobTemplate:
     spec:
       template:
@@ -14,4 +13,3 @@ spec:
             image: curlimages/curl
             args: ["curl", "-X", "POST", "--data", "{}", "el-detect-k8s-versions-event-listener.default.svc.cluster.local:8080"]
           restartPolicy: Never
-{{ end }}

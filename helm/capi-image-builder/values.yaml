@@ -16,11 +16,19 @@ image:
 provider: 
   kind: openstack
 
-s3:
-  accessKeyId:
-  secretAccessKey:
-  endPointUrl:
-  bucketName:
+output:
+  s3:
+    enabled: true
+    accessKeyId:
+    secretAccessKey:
+    endPointUrl:
+    bucketName:
+  # TODO  
+  # support the following output options
+  gcp:
+    enabled: false
+  openstackGlance:
+    enabled : false
 
 k8s:
   excludeVersions: 
@@ -56,5 +64,7 @@ k8s:
   - v1.24.0-alpha.4
   - v1.25.0-alpha.1 
 
-tektonCleaner:
+# The following is to cleanup the k8s version detect scripts from this app
+#  if tekton is already setup to cleanup jobs set below to false
+tektonDetectCleaner:
   enable: true

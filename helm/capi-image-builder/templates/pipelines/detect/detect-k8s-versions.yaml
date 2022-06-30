@@ -1,4 +1,3 @@
-{{ if eq .Values.provider.kind "openstack" }}
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
@@ -26,7 +25,7 @@ spec:
               grep tag_name | \
               awk -F '\"' '{print $4}' > $(results.releases.path)
             cat -e $(results.releases.path)
-
+    {{ if .Values.output.s3.enabled }}
     - name: get-s3-existing-image
       workspaces:
       - name: secrets
@@ -56,11 +55,13 @@ spec:
             script: "$(params.SCRIPT)"
             args:
               - "$(params.ARGS)"
-              
+    {{ end }}
     - name: start-k8s-build
       runAfter:
         - get-k8s-releases
+        {{ if .Values.output.s3.enabled }}
         - get-s3-existing-image
+        {{ end }}
       params:
       - name: releases
         value: "$(tasks.get-k8s-releases.results.releases)"
@@ -85,22 +86,25 @@ spec:
             value: "$(params.excludeReleasesList)"
           image: curlimages/curl
           script: |-
-            #set -x
-            #echo "$releases" 
-            #echo $existingReleases 
+
             for release in $releases
             do
               echo "Release: $release";
               if $( echo $existingReleases | grep -q "$release" ); then
                 echo "It's already there."
+
               elif $( echo $excludeReleasesList | grep -q "$release" ); then
                 echo "It's in the exclude list."
+
               elif $( echo $release | grep -q "alpha" ); then
                 echo "It's an alpha release... skipping."
+
               elif $( echo $release | grep -q "rc" ); then
                 echo "It's an rc release.. skipping."
+
               elif $( echo $release | grep -q "beta" ); then
                 echo "It's an beta release.. skipping."
+                
               else
                 echo "Need to add release:  $release"
                 curl -X POST \
@@ -120,4 +124,3 @@ spec:
               fi
 
             done
-{{ end }}
