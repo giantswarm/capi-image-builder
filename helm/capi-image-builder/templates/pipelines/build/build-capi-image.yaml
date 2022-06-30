@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: k8s-build
+  name: build-capi-image
 spec:
   params:
   - name: k8sVersion

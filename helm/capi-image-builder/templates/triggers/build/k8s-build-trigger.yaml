@@ -7,21 +7,21 @@ metadata:
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: k8s-build-event-listener
+  name: build-capi-image-event-listener
 spec:
   serviceAccountName: tekton-triggers-sa
   triggers:
-    - name: k8s-build
+    - name: build-capi-image
       bindings:
-        - ref: k8s-build-pipeline-binding
+        - ref: build-capi-image-pipeline-binding
       template:
-        ref: k8s-build-trigger-template
+        ref: build-capi-image-trigger-template
 
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: k8s-build-pipeline-binding
+  name: build-capi-image-pipeline-binding
 spec:
   params:
   - name: k8sVersion
@@ -31,7 +31,7 @@ spec:
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: k8s-build-trigger-template
+  name: build-capi-image-trigger-template
 spec:
   params:
   - name: k8sVersion
@@ -40,10 +40,10 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: k8s-build-$(tt.params.k8sVersion)
+      name: build-capi-image-$(tt.params.k8sVersion)
     spec:
       pipelineRef:
-        name: k8s-build
+        name: build-capi-image
       params:
       - name: k8sVersion
         value: $(tt.params.k8sVersion)
@@ -57,7 +57,7 @@ spec:
           subPath: source
           volumeClaimTemplate:
             metadata:
-              name: k8s-build-image-ws-pvc
+              name: build-capi-image-image-ws-pvc
             spec:
               accessModes:
                 - ReadWriteOnce

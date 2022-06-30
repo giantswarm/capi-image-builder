@@ -57,7 +57,7 @@ spec:
             args:
               - "$(params.ARGS)"
     {{ end }}
-    - name: start-k8s-build
+    - name: start-build-capi-image
       runAfter:
         - get-k8s-releases
         {{ if .Values.output.s3.enabled }}
@@ -76,7 +76,7 @@ spec:
         - name: existingReleases
         - name: excludeReleasesList
         steps:
-        - name: detect-start-k8s-build
+        - name: detect-and-start-building-capi-image
           onError: continue
           env:
           - name: releases
@@ -110,7 +110,7 @@ spec:
                 echo "Need to add release:  $release"
                 curl -X POST \
                   --silent \
-                  http://el-k8s-build-event-listener.default.svc.cluster.local:8080 \
+                  http://el-build-capi-image-event-listener.default.svc.cluster.local:8080 \
                   -H 'Content-Type: application/json' \
                   -d "{
                     \"k8s\":
