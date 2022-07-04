@@ -30,10 +30,8 @@ spec:
         - name: MEMORY
           value: '4096'
 
-        {{ if eq .Values.provider.kind "openstack" }}
         - name: make-target
           value: "build-qemu-ubuntu-2004"
-        {{ end }}
           
       workspaces:
       - name: output
@@ -49,12 +47,13 @@ spec:
       - name: SCRIPT
         value: |
           set -x
-          aws $1 $(cat /root/.aws/cli-params) cp $(workspaces.source.path)/$2/$2 s3://$(cat /root/.aws/bucket-name)/$2/
-          aws $1 $(cat /root/.aws/cli-params) cp $(workspaces.source.path)/$2/$2.sha256sums s3://$(cat /root/.aws/bucket-name)/$2/
+          files=($(find $(workspaces.source.path)))
+          for file in "${files[@]}"; do
+            aws $1 $(cat /root/.aws/cli-params) cp ${file} s3://$(cat /root/.aws/bucket-name)/
+          done
       - name: ARGS
         value:
         - s3
-        - ubuntu-2004-kube-v$(params.k8sVersion)
       workspaces:
       - name: secrets
         workspace: secrets

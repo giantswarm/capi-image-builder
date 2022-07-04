@@ -13,8 +13,9 @@ image:
   tag: v0.0.1
   pullPolicy: IfNotPresent
 
-provider: 
-  kind: openstack
+# The make target from this file
+#   https://github.com/kubernetes-sigs/image-builder/blob/master/images/capi/Makefile
+makeTarget: build-qemu-ubuntu-2004
 
 output:
   s3:

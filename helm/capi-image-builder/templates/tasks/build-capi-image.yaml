@@ -17,7 +17,7 @@ spec:
   - name: env-vars
     default: ""
   - name: make-target
-    default: "build-qemu-ubuntu-2004"
+    default: "{{.Values.makeTarget}}"
   workspaces:
   - name: credentials
     mountPath: /config/credentials
@@ -67,10 +67,12 @@ spec:
       script: |
         source $(workspaces.vars.path)/env
         make $(params.make-target)
+        cp -rf output/* $(workspaces.output.path)
 
     - name: generate-sha
       image: bash:5
       workingDir: $(workspaces.output.path)
       script: |
-        (cd $(workspaces.output.path)/ubuntu-2004-kube-v${KUBERNETES_VERSION}/ && sha256sum ubuntu-2004-kube-v${KUBERNETES_VERSION} > ubuntu-2004-kube-v${KUBERNETES_VERSION}.sha256sums)
+        find $(workspaces.output.path) -maxdepth 1 -type d /
+          -exec bash -c "cd '{}' && sha256sum ./*";
 
