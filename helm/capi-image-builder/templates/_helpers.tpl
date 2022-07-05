@@ -37,3 +37,13 @@ Selector labels
 app.kubernetes.io/name: {{ include "name" . | quote }}
 app.kubernetes.io/instance: {{ .Release.Name | quote }}
 {{- end -}}
+
+{{- define "makeTarget" -}}
+{{ if .Values.output.s3.enabled }}
+"{{.Values.output.s3.makeTarget}}"
+{{ else if .Values.output.gcp.enabled }}
+"{{.Values.output.gcp.makeTarget}}"
+{{ else if .Values.output.openstackGlance.enabled }}
+"{{.Values.output.openstackGlance.makeTarget}}"
+{{- end }}
+{{- end -}}

@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-capi-image
+spec:
+  params:
+  - name: ACCELERATOR
+    default: none
+  - name: KUBERNETES_VERSION
+    default: "1.24.1"
+  - name: CPUS
+    default: "4"
+  - name: MEMORY
+    default: "4096"
+  - name: build-image
+    default: k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.12
+  - name: env-vars
+    default: ""
+  - name: make-target
+    default: "build-raw-all"
+  workspaces:
+  - name: credentials
+    mountPath: /config/credentials
+    optional: true
+  - name: vars
+    optional: true
+  - name: output
+    optional: true
+  steps:
+    - name: build-vars
+      image: bash:5
+      script: |
+        VERSION_PARTS=($(echo $(params.KUBERNETES_VERSION) | tr "." "\n"))
+        VERSION_MAJOR=${VERSION_PARTS[0]}
+        VERSION_MINOR=${VERSION_PARTS[1]}
+        echo '{
+          "build_timestamp": "gs",
+          "kubernetes_deb_version": "$(params.KUBERNETES_VERSION)-00",
+          "kubernetes_rpm_version": "$(params.KUBERNETES_VERSION)-0",
+          "kubernetes_semver": "v$(params.KUBERNETES_VERSION)",
+          "kubernetes_series": "v${VERSION_MAJOR}.${VERSION_MINOR}",
+          "output_directory": "$(workspaces.output.path)/cluster-api-v$(params.KUBERNETES_VERSION)",
+          "memory": "$(params.MEMORY)",
+          "cpus": "$(params.CPUS)",
+          "accelerator": "$(params.ACCELERATOR)"
+          }' > $(workspaces.vars.path)/vars.json
+
+    - name: build-env-vars
+      image: bash:5
+      script: |
+        echo "$(params.env-vars)" > $(workspaces.vars.path)/env
+
+    - name: build-openstack-image
+      image: $(params.build-image)
+      timeout: 4h
+      resources:
+        requests:
+          memory: 6Gi
+          cpu: 4000m
+      securityContext:
+        privileged: true
+      env:
+      - name: PACKER_VAR_FILES
+        value: $(workspaces.vars.path)/vars.json
+      - name: PACKER_LOG
+        value: "1"
+      script: |
+        source $(workspaces.vars.path)/env
+        make $(params.make-target)
+        cp -rf output/* $(workspaces.output.path)
+
+    - name: generate-sha
+      image: bash:5
+      workingDir: $(workspaces.output.path)
+      script: |
+        find $(workspaces.output.path) -maxdepth 1 -type d /
+          -exec bash -c "cd '{}' && sha256sum ./*";
+

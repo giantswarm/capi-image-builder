@@ -1,0 +1,131 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: detect-k8s-versions
+spec:
+  params:
+  - name: excludeReleasesList
+  workspaces:
+  - name: secrets
+  results:
+  - name: k8s-releases
+    value: $(tasks.get-k8s-releases.results.releases)
+  tasks:
+    - name: get-k8s-releases
+      taskSpec:
+        results:
+        - name: releases
+        steps:
+        - name: get-k8s-releases
+          onError: continue
+          image: quay.io/giantswarm/docker-kubectl:latest
+          script: |-
+            curl "https://api.github.com/repos/kubernetes/kubernetes/releases?per_page=100" | \
+            	jq '.[] | select(.tag_name | test("^v1\\.[0-9]+\\.[0-9]+$")) | .tag_name' | \
+            	tee  $(results.releases.path)
+
+    
+    {{ if .Values.output.s3.enabled }}
+    - name: get-existing-images
+      workspaces:
+      - name: secrets
+        workspace: secrets
+      taskSpec:
+        results:
+        - name: existingReleases
+        workspaces:
+          - name: secrets
+            optional: true
+            mountPath: /root/.aws
+        params:
+        - name: SCRIPT
+          default: |-
+            aws s3 $(cat /root/.aws/cli-params) ls s3://$(cat /root/.aws/bucket-name)/ | \
+              grep ubuntu-2004-kube | \
+              sed 's/\///g' |\
+              awk -F 'ubuntu-2004-kube-' '{print $2}' \
+              > $(results.existingReleases.path);
+            cat -e $(results.existingReleases.path);
+        steps:
+          - name: get-s3-existing-image
+            image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
+            script: "$(params.SCRIPT)"
+
+    {{ else if .Values.output.gcp.enabled }}
+    - name: get-existing-images
+      taskSpec:
+        results:
+        - name: existingReleases
+    {{ else if .Values.output.openstackGlance.enabled }}
+    - name: get-existing-images
+      taskSpec:
+        results:
+        - name: existingReleases
+    {{ end }}
+    - name: start-build-capi-image
+      runAfter:
+        - get-k8s-releases
+        - get-existing-images
+      params:
+      - name: releases
+        value: "$(tasks.get-k8s-releases.results.releases)"
+      - name: existingReleases
+        value: "$(tasks.get-existing-images.results.existingReleases)"
+      - name: excludeReleasesList
+        value: "$(params.excludeReleasesList)"
+      taskSpec:
+        params:
+        - name: releases
+        - name: existingReleases
+        - name: excludeReleasesList
+        steps:
+        - name: detect-and-start-building-capi-image
+          onError: continue
+          env:
+          - name: releases
+            value: "$(params.releases)"
+          - name: existingReleases
+            value: "$(params.existingReleases)"
+          - name: excludeReleasesList
+            value: "$(params.excludeReleasesList)"
+          image: curlimages/curl
+          script: |-
+
+            for release in $releases
+            do
+              echo "Release: $release";
+              if $( echo $existingReleases | grep -q "$release" ); then
+                echo "It's already there."
+
+              elif $( echo $excludeReleasesList | grep -q "$release" ); then
+                echo "It's in the exclude list."
+
+              elif $( echo $release | grep -q "alpha" ); then
+                echo "It's an alpha release... skipping."
+
+              elif $( echo $release | grep -q "rc" ); then
+                echo "It's an rc release.. skipping."
+
+              elif $( echo $release | grep -q "beta" ); then
+                echo "It's an beta release.. skipping."
+
+              else
+                echo "Need to add release:  $release"
+                curl -X POST \
+                  --silent \
+                  http://el-build-capi-image-event-listener.default.svc.cluster.local:8080 \
+                  -H 'Content-Type: application/json' \
+                  -d "{
+                    \"k8s\":
+                    {
+                      \"version\": \"${release#v}\"
+                    }
+                  }"
+                  
+                  #TODO add concurrency since tekton doesn't support it.
+                  echo "Triggering only 1 build at a time"
+                  exit 0
+              fi
+
+            done

@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+ name: build-bot
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: build-capi-image-event-listener
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - name: build-capi-image
+      bindings:
+        - ref: build-capi-image-pipeline-binding
+      template:
+        ref: build-capi-image-trigger-template
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: build-capi-image-pipeline-binding
+spec:
+  params:
+  - name: k8sVersion
+    value: $(body.k8s.version)
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: build-capi-image-trigger-template
+spec:
+  params:
+  - name: k8sVersion
+
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: build-capi-image-$(tt.params.k8sVersion)
+    spec:
+      pipelineRef:
+        name: build-capi-image
+      params:
+      - name: k8sVersion
+        value: $(tt.params.k8sVersion)
+      
+      serviceAccountName: build-bot
+      timeouts:
+        pipeline: "8h4m0s"
+        tasks: "6h0m0s"
+      workspaces:
+        - name: source-ws
+          subPath: source
+          volumeClaimTemplate:
+            metadata:
+              name: build-capi-image-image-ws-pvc
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 5Gi
+        - name: output-ws  
+          volumeClaimTemplate:
+            metadata:
+              name: output-$(tt.params.k8sVersion)
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 5Gi
+        {{ if .Values.output.s3.enabled }}
+        - name: secrets
+          secret:
+            secretName: aws-credentials
+        {{ end }}

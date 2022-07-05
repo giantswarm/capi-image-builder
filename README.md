@@ -7,6 +7,26 @@ Here we define the capi-image-builder chart with its templates and default confi
 
 **What is this app?**
 
+## Architecture
+
+There are two major parts of this app.
+
+1) ( Detect ) Detecting new k8s that need to be built
+2) ( Build ) Building image and publishing it.
+
+Part 1)
+
+ - Look at kubernetes releases and get a list of releases available
+ - Look at output location and detect what versions are already present
+ - Compare the two list and start a build of the missing releases
+
+Part 2)
+
+ - Build the kubernetes capi image
+ - Publish to the specified output location
+
+
+
 **Why did we add it?**
 
 **Who can use it?**

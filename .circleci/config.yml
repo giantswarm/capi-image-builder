@@ -16,3 +16,20 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
+
+  build:
+    jobs:
+      - architect/push-to-docker:
+          context: "architect"
+          name: push-capi-image-builder-to-quay
+          image: "quay.io/giantswarm/capi-image-builder"
+          username_envar: "QUAY_USERNAME"
+          password_envar: "QUAY_PASSWORD"
+          filters:
+            # Trigger the job also on git tag.
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
