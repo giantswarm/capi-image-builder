@@ -17,7 +17,7 @@ spec:
   - name: env-vars
     default: ""
   - name: make-target
-    default: "{{.Values.makeTarget}}"
+    default: "build-raw-all"
   workspaces:
   - name: credentials
     mountPath: /config/credentials

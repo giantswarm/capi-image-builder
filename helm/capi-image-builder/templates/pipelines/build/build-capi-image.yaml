@@ -29,9 +29,8 @@ spec:
           value: '2'
         - name: MEMORY
           value: '4096'
-
         - name: make-target
-          value: "build-qemu-ubuntu-2004"
+          value: "{{ include "makeTarget" $ }}"
           
       workspaces:
       - name: output
@@ -39,24 +38,30 @@ spec:
 
     {{ if .Values.output.s3.enabled }}
     - name: s3-upload-image
-      taskRef:
-        name: aws-cli
       runAfter:
       - build-capi-image
-      params:
-      - name: SCRIPT
-        value: |
-          set -x
-          files=($(find $(workspaces.source.path)))
-          for file in "${files[@]}"; do
-            aws $1 $(cat /root/.aws/cli-params) cp ${file} s3://$(cat /root/.aws/bucket-name)/
-          done
-      - name: ARGS
-        value:
-        - s3
       workspaces:
       - name: secrets
         workspace: secrets
       - name: source
         workspace: output-ws
+      taskSpec:
+        workspaces:
+        - name: secrets
+          mountPath: /root/.aws
+        - name: source
+        params:
+          - name: SCRIPT
+            value: |
+              set -x
+              files=($(find $(workspaces.source.path)))
+              for file in "${files[@]}"; do
+                aws s3 $(cat /root/.aws/cli-params) cp ${file} s3://$(cat /root/.aws/bucket-name)/
+              done
+        steps:
+          - name: get-s3-existing-image
+            image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
+            script: "$(params.SCRIPT)"
+    {{ else if .Values.output.gcp.enabled }}
+    {{ else if .Values.output.openstackGlance.enabled }}
     {{ end }}

@@ -13,10 +13,9 @@ image:
   tag: v0.0.1
   pullPolicy: IfNotPresent
 
-# The make target from this file
-#   https://github.com/kubernetes-sigs/image-builder/blob/master/images/capi/Makefile
-makeTarget: build-qemu-ubuntu-2004
 
+# Output where to check what needs to be built and where to upload the image
+#  * Note *  Only 1 can be enabled at a time
 output:
   s3:
     enabled: true
@@ -24,12 +23,23 @@ output:
     secretAccessKey:
     endPointUrl:
     bucketName:
+    # The make target from this file
+    #   https://github.com/kubernetes-sigs/image-builder/blob/master/images/capi/Makefile
+    makeTarget: build-qemu-ubuntu-2004
+
   # TODO  
   # support the following output options
   gcp:
     enabled: false
+    # The make target from this file
+    #   https://github.com/kubernetes-sigs/image-builder/blob/master/images/capi/Makefile
+    makeTarget: build-gce-ubuntu-2004
   openstackGlance:
     enabled : false
+    # The make target from this file
+    #   https://github.com/kubernetes-sigs/image-builder/blob/master/images/capi/Makefile
+    makeTarget: build-qemu-ubuntu-2004
+
 
 k8s:
   excludeVersions: 

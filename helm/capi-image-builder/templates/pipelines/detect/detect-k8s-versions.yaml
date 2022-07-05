@@ -27,13 +27,13 @@ spec:
 
     
     {{ if .Values.output.s3.enabled }}
-    - name: get-s3-existing-image
+    - name: get-existing-images
       workspaces:
       - name: secrets
         workspace: secrets
       taskSpec:
         results:
-        - name: existingS3
+        - name: existingReleases
         workspaces:
           - name: secrets
             optional: true
@@ -45,29 +45,33 @@ spec:
               grep ubuntu-2004-kube | \
               sed 's/\///g' |\
               awk -F 'ubuntu-2004-kube-' '{print $2}' \
-              > $(results.existingS3.path);
-            cat -e $(results.existingS3.path);
-        - name: ARGS
-          default:
-          - s3
+              > $(results.existingReleases.path);
+            cat -e $(results.existingReleases.path);
         steps:
           - name: get-s3-existing-image
             image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
             script: "$(params.SCRIPT)"
-            args:
-              - "$(params.ARGS)"
+
+    {{ else if .Values.output.gcp.enabled }}
+    - name: get-existing-images
+      taskSpec:
+        results:
+        - name: existingReleases
+    {{ else if .Values.output.openstackGlance.enabled }}
+    - name: get-existing-images
+      taskSpec:
+        results:
+        - name: existingReleases
     {{ end }}
     - name: start-build-capi-image
       runAfter:
         - get-k8s-releases
-        {{ if .Values.output.s3.enabled }}
-        - get-s3-existing-image
-        {{ end }}
+        - get-existing-images
       params:
       - name: releases
         value: "$(tasks.get-k8s-releases.results.releases)"
       - name: existingReleases
-        value: "$(tasks.get-s3-existing-image.results.existingS3)"
+        value: "$(tasks.get-existing-images.results.existingReleases)"
       - name: excludeReleasesList
         value: "$(params.excludeReleasesList)"
       taskSpec:
