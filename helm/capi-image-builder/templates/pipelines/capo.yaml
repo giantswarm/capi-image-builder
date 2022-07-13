@@ -1,7 +1,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: build-capo-image
+  name: {{ include "name" }}-build-capo-image
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   params:
   - name: KUBERNETES_VERSION
@@ -20,7 +23,7 @@ spec:
       timeout: 6h
       retries: 1
       taskRef:
-        name: build-capi-image
+        name: {{ include "name" }}-build-capi-image
       params:
         - name: KUBERNETES_VERSION
           value: $(params.KUBERNETES_VERSION)
@@ -39,7 +42,7 @@ spec:
 
     - name: upload-images
       taskRef:
-        name: s3-upload-image
+        name: {{ include "name" }}-s3-upload-image
       runAfter:
         - build-capi-image
       retries: 1

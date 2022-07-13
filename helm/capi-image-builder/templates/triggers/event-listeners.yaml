@@ -1,7 +1,10 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: build-capi-images-event-listener
+  name: {{ include "name" }}-build-capi-images-event-listener
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
   annotations:
     specific-provider-example-payload: |
       {
@@ -13,7 +16,7 @@ metadata:
         "k8s": { "version": "1.2.3" }
       }
 spec:
-  serviceAccountName: tekton-triggers-sa
+  serviceAccountName: {{ include "name" }}-tekton-triggers-sa
   triggers:
     - name: build-capg-image
       interceptors:
@@ -23,9 +26,9 @@ spec:
         - name: "filter"
           value: "has(body.provider) == false || body.provider == "capg""
       bindings:
-      - ref: capi-trigger-template-binding
+      - ref: {{ include "name" }}-capi-trigger-template-binding
       template:
-        ref: capg-trigger-template
+        ref: {{ include "name" }}-capg-trigger-template
 
     - name: build-capo-image
       interceptors:
@@ -35,19 +38,22 @@ spec:
         - name: "filter"
           value: "has(body.provider) == false || body.provider == "capo""
       bindings:
-      - ref: capi-trigger-template-binding
+      - ref: {{ include "name" }}-capi-trigger-template-binding
       template:
-        ref: capo-trigger-template
+        ref: {{ include "name" }}-capo-trigger-template
 
 ---
 
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: trigger-capi-builds
+  name: {{ include "name" }}-trigger-capi-builds
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
 spec:
-  serviceAccountName: tekton-triggers-sa
+  serviceAccountName: {{ include "name" }}-tekton-triggers-sa
   triggers:
     - name: trigger-builds
       template:
-        ref: check-kubernetes-versions
+        ref: {{ include "name" }}-check-kubernetes-versions

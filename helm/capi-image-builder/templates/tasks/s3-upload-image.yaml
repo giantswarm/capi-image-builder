@@ -1,7 +1,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: s3-upload-image
+  name: {{ include "name" }}-s3-upload-image
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   description: "Take all built images in the `source` workspace and uploads it to an S3 bucket using details provided in the `credentials` workspace"
   params: []

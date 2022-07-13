@@ -1,7 +1,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: trigger-capi-builds
+  name: {{ include "name" }}-trigger-capi-builds
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   params: []
   workspaces: []
@@ -9,4 +12,4 @@ spec:
   - name: trigger-builds-from-kubernetes-releases
     retries: 1
     taskRef:
-      name: trigger-builds-from-kubernetes-releases
+      name: {{ include "name" }}-trigger-builds-from-kubernetes-releases

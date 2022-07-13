@@ -1,7 +1,10 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: capg-trigger-template
+  name: {{ include "name" }}-capg-trigger-template
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   params:
   - name: KUBERNETES_VERSION
@@ -16,12 +19,12 @@ spec:
         pipeline: "8h0m0s"
         tasks: "6h0m0s"
       pipelineRef:
-        name: build-capg-image
-      serviceAccountName: capi-builder
+        name: {{ include "name" }}-build-capg-image
+      serviceAccountName: {{ include "name" }}-capi-builder
       params:
       - name: KUBERNETES_VERSION
         value: $(tt.params.KUBERNETES_VERSION)
       workspaces:
       - name: credentials
         secret:
-          secretName: gcp-credentials
+          secretName: {{ include "name" }}-gcp-credentials

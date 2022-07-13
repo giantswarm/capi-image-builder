@@ -1,7 +1,10 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: capo-trigger-template
+  name: {{ include "name" }}-capo-trigger-template
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   params:
   - name: KUBERNETES_VERSION
@@ -16,15 +19,15 @@ spec:
         pipeline: "8h0m0s"
         tasks: "6h0m0s"
       pipelineRef:
-        name: build-capo-image
-      serviceAccountName: capi-builder
+        name: {{ include "name" }}-build-capo-image
+      serviceAccountName: {{ include "name" }}-capi-builder
       params:
       - name: KUBERNETES_VERSION
         value: $(tt.params.KUBERNETES_VERSION)
       workspaces:
       - name: credentials
         secret:
-          secretName: aws-credentials
+          secretName: {{ include "name" }}-aws-credentials
       - name: output
         volumeClaimTemplate:
           metadata:

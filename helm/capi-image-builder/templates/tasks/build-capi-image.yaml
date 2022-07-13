@@ -1,7 +1,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: build-capi-image
+  name: {{ include "name" }}-build-capi-image
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
 spec:
   description: "Builds a CAPI VM image based on the provided params. The mechanism used to create the image depends on the MAKE_TARGET chosen."
   params:
@@ -31,7 +34,7 @@ spec:
     optional: false
   steps:
     - name: build-vars
-      image: bash:5
+      image: quay.io/giantswarm/docker-kubectl:1.24.2
       script: |
         VERSION_PARTS=($(echo $(params.KUBERNETES_VERSION) | tr "." "\n"))
         VERSION_MAJOR=${VERSION_PARTS[0]}
