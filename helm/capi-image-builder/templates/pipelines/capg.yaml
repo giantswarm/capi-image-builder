@@ -39,7 +39,8 @@ spec:
         name: share-capg-images
       runAfter:
         - build-capi-image
-      params:
+      params: []
+      retries: 1
       workspaces:
       - name: credentials
         workspace: credentials

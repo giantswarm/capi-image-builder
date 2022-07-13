@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: trigger-capi-builds
+spec:
+  params: []
+  workspaces: []
+  tasks:
+  - name: trigger-builds-from-kubernetes-releases
+    retries: 1
+    taskRef:
+      name: trigger-builds-from-kubernetes-releases

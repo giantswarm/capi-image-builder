@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: trigger-builds-from-kubernetes-releases
+spec:
+  description: "Fetches the latest Kubernetes releases, filtering out any pre-releases, and for all published since the provided `SINCE` seconds trigger a build pipeline"
+  params:
+  - name: SINCE
+    type: string
+    default: "93600" # 26 hours in seconds
+  steps:
+    - name: trigger-builds
+      image: bash:5
+      script: |
+        VERSIONS=($(curl --silent https://api.github.com/repos/kubernetes/kubernetes/releases | jq -r '. | map({tag_name,published_at,prerelease}) | .[] | select(.prerelease==false) | select(.published_at | strptime("%Y-%m-%dT%H:%M:%SZ")|mktime >= (now-$(params.SINCE))) | .tag_name'))
+
+        for v in "${VERSIONS[@]}"; do
+          echo "Triggering build for ${v}"
+          curl -X POST --silent \
+            http://el-build-capi-images-event-listener.{{.Release.Namespace}}.svc.cluster.local:8080 \
+            -H 'Content-Type: application/json' \
+            -d "{\"k8s\": { \"version\": \"${v#v}\" }}"
+        done

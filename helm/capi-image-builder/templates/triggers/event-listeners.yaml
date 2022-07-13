@@ -38,3 +38,16 @@ spec:
       - ref: capi-trigger-template-binding
       template:
         ref: capo-trigger-template
+
+---
+
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: trigger-capi-builds
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - name: trigger-builds
+      template:
+        ref: check-kubernetes-versions

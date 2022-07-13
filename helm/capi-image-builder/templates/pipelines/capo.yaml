@@ -14,6 +14,8 @@ spec:
     description: "The AWS S3 credentials and details needed to upload built images to an S3 bucket"
     optional: false
   tasks:
+    # TODO: Add task to check if image already exists
+
     - name: build-capi-image
       timeout: 6h
       retries: 1
@@ -40,7 +42,8 @@ spec:
         name: s3-upload-image
       runAfter:
         - build-capi-image
-      params:
+      retries: 1
+      params: []
       workspaces:
       - name: credentials
         workspace: credentials

@@ -1,0 +1,15 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: check-kubernetes-versions
+spec:
+  params: []
+  resourcetmplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: trigger-capi-builds
+    spec:
+      pipelineRef:
+        name: trigger-capi-builds
+      serviceAccountName: capi-builder
