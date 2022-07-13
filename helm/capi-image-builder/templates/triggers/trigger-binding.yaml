@@ -1,0 +1,8 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: capi-trigger-template-binding
+spec:
+  params:
+  - name: KUBERNETES_VERSION
+    value: $(body.k8s.version)

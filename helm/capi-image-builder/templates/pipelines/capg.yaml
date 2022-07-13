@@ -1,0 +1,45 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-capg-image
+spec:
+  params:
+  - name: KUBERNETES_VERSION
+    type: string
+  workspaces:
+  - name: credentials
+    description: "GCP credentials containing the required `sa.json` file for authenticating"
+    optional: false
+  tasks:
+    - name: build-capi-image
+      timeout: 6h
+      retries: 1
+      taskRef:
+        name: build-capi-image
+      params:
+        - name: KUBERNETES_VERSION
+          value: $(params.KUBERNETES_VERSION)
+        - name: MAKE_TARGET
+          value: "build-gce-all"
+        - name: ENV_VARS
+          value: |
+            export GCP_PROJECT_ID=giantswarm-vm-images
+            export GOOGLE_APPLICATION_CREDENTIALS=/config/credentials/sa.json
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: output
+        emptyDir: {}
+      - name: vars
+        emptyDir: {}
+
+    - name: share-images
+      taskRef:
+        name: share-capg-images
+      runAfter:
+        - build-capi-image
+      params:
+      workspaces:
+      - name: credentials
+        workspace: credentials

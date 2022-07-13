@@ -1,0 +1,27 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: capg-trigger-template
+spec:
+  params:
+  - name: KUBERNETES_VERSION
+    type: string
+  resourcetmplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: build-capg-image-$(tt.params.KUBERNETES_VERSION)
+    spec:
+      timeouts:
+        pipeline: "8h0m0s"
+        tasks: "6h0m0s"
+      pipelineRef:
+        name: build-capg-image
+      serviceAccountName: capi-builder
+      params:
+      - name: KUBERNETES_VERSION
+        value: $(tt.params.KUBERNETES_VERSION)
+      workspaces:
+      - name: credentials
+        secret:
+          secretName: gcp-credentials

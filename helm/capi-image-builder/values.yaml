@@ -1,5 +1,3 @@
-# TEMPLATE-APP: This is set as a reasonable default, feel free to change.
-
 name: capi-image-builder
 serviceType: managed
 
@@ -7,8 +5,11 @@ project:
   branch: "[[ .Branch ]]"
   commit: "[[ .SHA ]]"
 
-image:
-  registry: quay.io
-  name: giantswarm/capi-image-builder
-  tag: v0.0.1
-  pullPolicy: IfNotPresent
+s3:
+  accessKeyId: ""
+  secretAccessKey: ""
+  endpointURL: ""
+  bucketName: ""
+
+gcp:
+  serviceAccountCredentialsJSON: ""

@@ -1,0 +1,48 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-capo-image
+spec:
+  params:
+  - name: KUBERNETES_VERSION
+    type: string
+  workspaces:
+  - name: output
+    description: "The location where VM images are saved to"
+    optional: false
+  - name: credentials
+    description: "The AWS S3 credentials and details needed to upload built images to an S3 bucket"
+    optional: false
+  tasks:
+    - name: build-capi-image
+      timeout: 6h
+      retries: 1
+      taskRef:
+        name: build-capi-image
+      params:
+        - name: KUBERNETES_VERSION
+          value: $(params.KUBERNETES_VERSION)
+        - name: MAKE_TARGET
+          value: "build-qemu-ubuntu-2004"
+        - name: PACKER_VARS_FILE
+          value: |
+            {"memory": "4096","cpus": "4","accelerator": "none"}
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: output
+        workspace: output
+      - name: vars
+        emptyDir: {}
+
+    - name: upload-images
+      taskRef:
+        name: s3-upload-image
+      runAfter:
+        - build-capi-image
+      params:
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: source
+        workspace: output

@@ -1,0 +1,40 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: build-capi-images-event-listener
+  annotations:
+    specific-provider-example-payload: |
+      {
+        "payload": "capg",
+        "k8s": { "version": "1.2.3" }
+      }
+    all-providers-example-payload: |
+      {
+        "k8s": { "version": "1.2.3" }
+      }
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - name: build-capg-image
+      interceptors:
+      - ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: "has(body.provider) == false || body.provider == "capg""
+      bindings:
+      - ref: capi-trigger-template-binding
+      template:
+        ref: capg-trigger-template
+
+    - name: build-capo-image
+      interceptors:
+      - ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: "has(body.provider) == false || body.provider == "capo""
+      bindings:
+      - ref: capi-trigger-template-binding
+      template:
+        ref: capo-trigger-template
