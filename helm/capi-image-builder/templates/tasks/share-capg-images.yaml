@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: share-capg-images
+spec:
+  description: "Updates permissions of built images to share with all GCP accounts"
+  params:
+  - name: KUBERNETES_VERSION
+    type: string
+  workspaces:
+  - name: credentials
+    mountPath: /config/credentials
+    optional: true
+  steps:
+    - name: share-images
+      image: bash:5 # TODO: Change this to something with gcloud
+      script: |
+        # TODO: Find all images with provided Kube version and update IAM permissions
