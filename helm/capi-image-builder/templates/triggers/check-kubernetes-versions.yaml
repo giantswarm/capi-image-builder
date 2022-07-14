@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: {{ include "name" }}-check-kubernetes-versions
+  name: {{ include "name" . }}-check-kubernetes-versions
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "labels.common" . | nindent 4 }}
@@ -14,5 +14,5 @@ spec:
       name: trigger-capi-builds
     spec:
       pipelineRef:
-        name: {{ include "name" }}-trigger-capi-builds
-      serviceAccountName: {{ include "name" }}-capi-builder
+        name: {{ include "name" . }}-trigger-capi-builds
+      serviceAccountName: {{ include "name" . }}-capi-builder

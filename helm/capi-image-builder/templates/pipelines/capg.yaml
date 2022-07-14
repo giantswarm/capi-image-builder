@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: {{ include "name" }}-build-capg-image
+  name: {{ include "name" . }}-build-capg-image
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "labels.common" . | nindent 4 }}
@@ -19,7 +19,7 @@ spec:
       timeout: 6h
       retries: 1
       taskRef:
-        name: {{ include "name" }}-build-capi-image
+        name: {{ include "name" . }}-build-capi-image
       params:
         - name: KUBERNETES_VERSION
           value: $(params.KUBERNETES_VERSION)
@@ -41,7 +41,7 @@ spec:
       taskRef:
         name: share-capg-images
       runAfter:
-        - {{ include "name" }}-build-capi-image
+        - {{ include "name" . }}-build-capi-image
       params: []
       retries: 1
       workspaces:
