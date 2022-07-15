@@ -21,5 +21,5 @@ spec:
         set -x
         files=($(find $(workspaces.source.path)))
         for file in "${files[@]}"; do
-          aws s3 $(cat$(workspaces.credentials.path)/cli-params) cp ${file} s3://$(cat$(workspaces.credentials.path)/bucket-name)/
+          aws s3 $(cat $(workspaces.credentials.path)/cli-params) cp ${file} s3://$(cat $(workspaces.credentials.path)/bucket-name)/
         done
