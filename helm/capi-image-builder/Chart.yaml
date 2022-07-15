@@ -1,8 +1,7 @@
 apiVersion: v2
 
 name: capi-image-builder
-version: 1 #[[ .Version ]]
-appVersion: 0.0.1
+version: [[ .Version ]]
 
 description: App to handle building of CAPI VM images for various providers
 

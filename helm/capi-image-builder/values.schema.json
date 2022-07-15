@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "gcp": {
+            "type": "object",
+            "properties": {
+                "serviceAccountCredentialsJSON": {
+                    "type": "string"
+                }
+            }
+        },
+        "image": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "registry": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "project": {
+            "type": "object",
+            "properties": {
+                "branch": {
+                    "type": "string"
+                },
+                "commit": {
+                    "type": "string"
+                }
+            }
+        },
+        "s3": {
+            "type": "object",
+            "properties": {
+                "accessKeyId": {
+                    "type": "string"
+                },
+                "bucketName": {
+                    "type": "string"
+                },
+                "endpointURL": {
+                    "type": "string"
+                },
+                "secretAccessKey": {
+                    "type": "string"
+                }
+            }
+        },
+        "serviceType": {
+            "type": "string"
+        }
+    }
+}

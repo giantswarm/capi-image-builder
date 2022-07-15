@@ -12,27 +12,6 @@ This PR:
 
 - adds/changes/removes etc
 
-### Testing
-
-Description on how capi-image-builder can be tested.
-
-- [ ] fresh install works
-  - [ ] AWS
-  - [ ] Azure
-  - [ ] KVM
-- [ ] upgrade from previous version works
-  - [ ] AWS
-  - [ ] Azure
-  - [ ] KVM
-
-#### Other testing
-
-Description of features to additionally test for capi-image-builder installations.
-
-- [ ] check reconciliation of existing resources after upgrading
-- [ ] X still works after upgrade
-- [ ] Y is installed correctly
-
 <!--
 Changelog must always be updated.
 -->
