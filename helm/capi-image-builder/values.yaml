@@ -4,6 +4,11 @@ project:
   branch: "[[ .Branch ]]"
   commit: "[[ .SHA ]]"
 
+image:
+  registry: quay.io
+  name: giantswarm/capi-image-builder
+  tag: 0.0.1
+
 s3:
   accessKeyId: ""
   secretAccessKey: ""

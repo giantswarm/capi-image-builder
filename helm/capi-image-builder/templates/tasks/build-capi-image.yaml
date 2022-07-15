@@ -13,8 +13,7 @@ spec:
     default: "1.24.1"
   - name: BUILDER_IMAGE
     type: string
-    # TODO: Replace this with our own modified image
-    default: k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.12
+    default: {{.Values.image.registry}}/{{.Values.image.name}}:{{.Values.image.tag}}
   - name: ENV_VARS
     type: string
     default: ""
