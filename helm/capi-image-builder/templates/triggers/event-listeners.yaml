@@ -8,7 +8,7 @@ metadata:
   annotations:
     specific-provider-example-payload: |
       {
-        "payload": "capg",
+        "provider": "capg",
         "k8s": { "version": "1.2.3" }
       }
     all-providers-example-payload: |
@@ -56,4 +56,4 @@ spec:
   triggers:
     - name: trigger-builds
       template:
-        ref: {{ include "name" . }}-check-kubernetes-versions
+        ref: {{ include "name" . }}-trigger-capi-builds
