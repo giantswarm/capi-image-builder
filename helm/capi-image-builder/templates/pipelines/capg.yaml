@@ -10,6 +10,7 @@ spec:
   params:
   - name: KUBERNETES_VERSION
     type: string
+    description: "The Kubernetes version to build for - e.g. 1.24.3 (Note, if a `v` prefix is added, this will be stripped off in the build task)"
   workspaces:
   - name: credentials
     description: "GCP credentials containing the required `sa.json` file for authenticating"
