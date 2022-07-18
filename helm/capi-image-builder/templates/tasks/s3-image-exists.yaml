@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: {{ include "name" . }}-s3-image-exists
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+spec:
+  description: "Checks if an image exists in the S3 bucket"
+  params:
+  - name: IMAGE
+    type: string
+  results:
+  - name: image-exists
+    description: A boolean (string) indicating if the requested image exists in the bucket
+  workspaces:
+  - name: credentials
+    mountPath: /root/.aws
+    optional: false
+  steps:
+    - name: does-image-exist
+      image: {{.Values.s3.image.registry}}/{{.Values.s3.image.name}}:{{.Values.s3.image.tag}}
+      script: |
+        check_exists() {
+          aws s3 $(cat $(workspaces.credentials.path)/cli-params) ls s3://$(cat $(workspaces.credentials.path)/bucket-name)/$(params.IMAGE) &>/dev/null
+        }
+
+        if check_exists; then
+          echo "true" > $(results.image-exists.path)
+        else
+          echo "false" > $(results.image-exists.path)
+        fi

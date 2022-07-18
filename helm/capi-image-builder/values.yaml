@@ -1,6 +1,3 @@
-# TEMPLATE-APP: This is set as a reasonable default, feel free to change.
-
-name: capi-image-builder
 serviceType: managed
 
 project:
@@ -10,5 +7,17 @@ project:
 image:
   registry: quay.io
   name: giantswarm/capi-image-builder
-  tag: v0.0.1
-  pullPolicy: IfNotPresent
+  tag: 0.0.1
+
+s3:
+  image:
+    registry: docker.io
+    name: amazon/aws-cli
+    tag: 2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4
+  accessKeyId: ""
+  secretAccessKey: ""
+  endpointURL: ""
+  bucketName: ""
+
+gcp:
+  serviceAccountCredentialsJSON: ""

@@ -1,0 +1,67 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: {{ include "name" . }}-build-capo-image
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+spec:
+  params:
+  - name: KUBERNETES_VERSION
+    type: string
+  workspaces:
+  - name: output
+    description: "The location where VM images are saved to"
+    optional: false
+  - name: credentials
+    description: "The AWS S3 credentials and details needed to upload built images to an S3 bucket"
+    optional: false
+  tasks:
+    - name: check-image-exists
+      taskRef:
+        name: {{ include "name" . }}-s3-image-exists
+      params:
+      - name: IMAGE
+        # We pass the sha256 rather than the image itself so we can check that the process completed (sha is the last setp)
+        value: cluster-api-v$(params.KUBERNETES_VERSION).sha256sums
+      workspaces:
+      - name: credentials
+        workspace: credentials
+
+    - name: build-capi-image
+      when:
+      - input: "$(tasks.check-image-exists.results.image-exists)"
+        operator: in
+        values: ["false"]
+      timeout: 6h
+      retries: 1
+      taskRef:
+        name: {{ include "name" . }}-build-capi-image
+      params:
+        - name: KUBERNETES_VERSION
+          value: $(params.KUBERNETES_VERSION)
+        - name: MAKE_TARGET
+          value: "build-qemu-ubuntu-2004"
+        - name: PACKER_VARS_FILE
+          value: |
+            {"memory": "4096","cpus": "4","accelerator": "none"}
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: output
+        workspace: output
+      - name: vars
+        emptyDir: {}
+
+    - name: upload-images
+      taskRef:
+        name: {{ include "name" . }}-s3-upload-image
+      runAfter:
+        - build-capi-image
+      retries: 1
+      params: []
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: source
+        workspace: output

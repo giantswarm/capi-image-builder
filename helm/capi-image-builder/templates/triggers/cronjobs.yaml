@@ -1,0 +1,18 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "name" . }}-trigger-capi-builds
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+spec:
+  schedule: "0 4 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: trigger-capi-build-check
+            image: curlimages/curl
+            args: ["curl", "-X", "POST", "--data", "{}", "el-{{ include "name" . }}-trigger-capi-builds.{{.Release.Namespace}}.svc.cluster.local:8080"]
+          restartPolicy: OnFailure

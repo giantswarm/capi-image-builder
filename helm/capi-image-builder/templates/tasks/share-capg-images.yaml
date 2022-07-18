@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: {{ include "name" . }}-share-capg-images
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+spec:
+  description: "Updates permissions of built images to share with all GCP accounts"
+  params:
+  - name: KUBERNETES_VERSION
+    type: string
+  - name: GCP_PROJECT_ID
+    type: string
+    default: giantswarm-vm-images
+  - name: IMAGE_NAME_PATTERN
+    type: string
+    default: cluster-api-ubuntu-[0-9]+-v${KUBE_VERSION}-gs
+  workspaces:
+  - name: credentials
+    mountPath: /config/credentials
+    optional: false
+  steps:
+    - name: share-images
+      image: google/cloud-sdk:392.0.0
+      env:
+      - name: GCP_PROJECT_ID
+        value: $(params.GCP_PROJECT_ID)
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /config/credentials/sa.json
+      script: |
+        set -e
+
+        # Ensure we have the expected credentials file
+        test -f ${GOOGLE_APPLICATION_CREDENTIALS}
+
+        KUBE_VERSION=$(echo "$(params.KUBERNETES_VERSION)" | tr '.' '-')
+
+        IMAGES=$(gcloud compute images list --filter="name~'$(params.IMAGE_NAME_PATTERN)' AND selfLink~'.*/$(params.GCP_PROJECT_ID)/.*'" --format="value(name)")
+        for IMAGE in ${IMAGES}; do
+          echo "Sharing VM image ${IMAGE}"
+          gcloud compute images add-iam-policy-binding ${IMAGE} --member=allAuthenticatedUsers --role=roles/compute.imageUser
+        done
