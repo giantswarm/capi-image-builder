@@ -47,6 +47,20 @@
                 "endpointURL": {
                     "type": "string"
                 },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "registry": {
+                            "type": "string"
+                        },
+                        "tag": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "secretAccessKey": {
                     "type": "string"
                 }

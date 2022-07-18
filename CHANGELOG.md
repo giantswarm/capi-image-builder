@@ -7,4 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/giantswarm/REPOSITORY_NAME/tree/main
+- Initial release
+
+[Unreleased]: https://github.com/giantswarm/capi-image-builder/tree/main
