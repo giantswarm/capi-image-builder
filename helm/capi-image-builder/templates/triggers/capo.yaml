@@ -8,7 +8,7 @@ metadata:
 spec:
   params:
   - name: KUBERNETES_VERSION
-  resourcetmplates:
+  resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
