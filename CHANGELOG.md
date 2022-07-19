@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Remove invalid `type` property from trigger template params
+
 ## [1.0.0] - 2022-07-18
 
 - Initial release
