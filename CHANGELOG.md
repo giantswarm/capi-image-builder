@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2022-07-19
+### Fixed
 
-## [1.0.0] - 2022-07-18
+- Remove invalid `type` property from trigger template params
+
+## [1.0.0] - 2022-07-19
 
 - Initial release
 
 [Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.0...v1.0.0
 [1.0.0]: https://github.com/giantswarm/capi-image-builder/releases/tag/v1.0.0
