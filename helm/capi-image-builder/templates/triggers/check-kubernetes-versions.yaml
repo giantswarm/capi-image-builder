@@ -7,7 +7,7 @@ metadata:
     {{- include "labels.common" . | nindent 4 }}
 spec:
   params: []
-  resourcetmplates:
+  resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
