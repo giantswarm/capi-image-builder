@@ -13,7 +13,7 @@ spec:
     default: "93600" # 26 hours in seconds
   steps:
     - name: trigger-builds
-      image: bash:5
+      image: quay.io/giantswarm/docker-kubectl:1.24.2
       script: |
         #!/usr/bin/env bash
         VERSIONS=($(curl --silent https://api.github.com/repos/kubernetes/kubernetes/releases | jq -r '. | map({tag_name,published_at,prerelease}) | .[] | select(.prerelease==false) | select(.published_at | strptime("%Y-%m-%dT%H:%M:%SZ")|mktime >= (now-$(params.SINCE))) | .tag_name'))
