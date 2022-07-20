@@ -12,7 +12,7 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: build-capo-image-$(tt.params.KUBERNETES_VERSION)
+      generateName: build-capo-image-$(tt.params.KUBERNETES_VERSION)-
     spec:
       timeouts:
         pipeline: "8h0m0s"
