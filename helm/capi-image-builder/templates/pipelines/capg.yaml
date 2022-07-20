@@ -42,7 +42,7 @@ spec:
       taskRef:
         name: share-capg-images
       runAfter:
-        - {{ include "name" . }}-build-capi-image
+        - build-capi-image
       params: []
       retries: 1
       workspaces:
