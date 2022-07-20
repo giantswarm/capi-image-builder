@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.7] - 2022-07-20
+
 ### Fixed
 
 - Dont use bash array for listing versions
@@ -52,7 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.6...HEAD
+[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.7...HEAD
+[1.0.7]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.3...v1.0.4
