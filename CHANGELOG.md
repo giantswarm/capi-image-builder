@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.10] - 2022-07-20
+
 ### Fixed
 
 - GCP share images authentication
@@ -73,7 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.9...HEAD
+[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.10...HEAD
+[1.0.10]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.9...v1.0.10
 [1.0.9]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.8...v1.0.9
 [1.0.8]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.7...v1.0.8
 [1.0.7]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.6...v1.0.7
