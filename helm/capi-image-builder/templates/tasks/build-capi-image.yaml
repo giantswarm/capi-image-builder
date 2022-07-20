@@ -62,6 +62,7 @@ spec:
     - name: build-env-vars
       image: bash:5
       script: |
+        #!/usr/bin/env bash
         echo "$(params.ENV_VARS)" > $(workspaces.vars.path)/env
 
     - name: build-image
