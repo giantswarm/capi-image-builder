@@ -79,6 +79,7 @@ spec:
         value: "1"
       script: |
         #!/usr/bin/env bash
+        set -e
         source $(workspaces.vars.path)/env
         make $(params.MAKE_TARGET)
         # If a local file has been created (e.g. for CAPO) we'll also generate a sha256 for it
