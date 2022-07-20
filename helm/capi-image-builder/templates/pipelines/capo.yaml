@@ -10,11 +10,14 @@ spec:
   - name: KUBERNETES_VERSION
     type: string
   workspaces:
-  - name: output
-    description: "The location where VM images are saved to"
-    optional: false
   - name: credentials
     description: "The AWS S3 credentials and details needed to upload built images to an S3 bucket"
+    optional: false
+  - name: vars
+    description: "Shared workspace for passing vars betweeen task steps"
+    optional: false
+  - name: output
+    description: "The location where VM images are saved to"
     optional: false
   tasks:
     - name: check-image-exists
@@ -51,7 +54,7 @@ spec:
       - name: output
         workspace: output
       - name: vars
-        emptyDir: {}
+        workspace: vars
 
     - name: upload-images
       taskRef:

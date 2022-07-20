@@ -27,3 +27,7 @@ spec:
       - name: credentials
         secret:
           secretName: {{ include "name" . }}-gcp-credentials
+      - name: vars
+        emptyDir: {}
+      - name: output
+        emptyDir: {}

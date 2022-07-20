@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Reference `emptyDir` correctly in TriggerTemplate rather than Pipeline
+
 ## [1.0.8] - 2022-07-20
 
 ### Fixed
