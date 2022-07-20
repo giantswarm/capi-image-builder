@@ -20,6 +20,9 @@ spec:
       pipelineRef:
         name: {{ include "name" . }}-build-capo-image
       serviceAccountName: {{ include "name" . }}-capi-builder
+      podTemplate:
+        securityContext:
+          fsGroup: 0
       params:
       - name: KUBERNETES_VERSION
         value: $(tt.params.KUBERNETES_VERSION)
