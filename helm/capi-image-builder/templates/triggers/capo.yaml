@@ -30,7 +30,7 @@ spec:
       - name: output
         volumeClaimTemplate:
           metadata:
-            name: capo-output-$(tt.params.KUBERNETES_VERSION)
+            generateName: capo-output-$(tt.params.KUBERNETES_VERSION)-
           spec:
             accessModes:
               - ReadWriteOnce
