@@ -6,6 +6,25 @@ metadata:
   labels:
     {{- include "labels.common" . | nindent 4 }}
 spec:
+  privileged: true
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  fsGroup:
+    rule: RunAsAny
+  volumes:
+  - '*'
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: {{ include "name" . }}-affinity-assistant
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+spec:
   privileged: false
   seLinux:
     rule: RunAsAny
