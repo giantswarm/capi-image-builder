@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Dont use bash array for listing versions
+
 ## [1.0.6] - 2022-07-20
 
 ### Fixed

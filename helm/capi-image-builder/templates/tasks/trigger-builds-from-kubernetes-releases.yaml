@@ -15,10 +15,9 @@ spec:
     - name: trigger-builds
       image: quay.io/giantswarm/docker-kubectl:1.24.2
       script: |
-        #!/usr/bin/env bash
-        VERSIONS=($(curl --silent https://api.github.com/repos/kubernetes/kubernetes/releases | jq -r '. | map({tag_name,published_at,prerelease}) | .[] | select(.prerelease==false) | select(.published_at | strptime("%Y-%m-%dT%H:%M:%SZ")|mktime >= (now-$(params.SINCE))) | .tag_name'))
+        VERSIONS=$(curl --silent https://api.github.com/repos/kubernetes/kubernetes/releases | jq -r '. | map({tag_name,published_at,prerelease}) | .[] | select(.prerelease==false) | select(.published_at | strptime("%Y-%m-%dT%H:%M:%SZ")|mktime >= (now-$(params.SINCE))) | .tag_name')
 
-        for v in "${VERSIONS[@]}"; do
+        for v in ${VERSIONS}; do
           echo "Triggering build for ${v}"
           curl -X POST --silent \
             http://el-{{ include "name" . }}-build-capi-images-event-listener.{{.Release.Namespace}}.svc.cluster.local:8080 \
