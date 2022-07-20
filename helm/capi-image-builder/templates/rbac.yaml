@@ -8,6 +8,38 @@ metadata:
 
 ---
 
+{{- if .Capabilities.APIVersions.Has "policy/v1beta1/PodSecurityPolicy" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "name" . }}-capi-builder
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames: ['{{ include "name" . }}-capi-builder']
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "name" . }}-capi-builder
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "name" . }}-capi-builder
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: {{ include "name" . }}-capi-builder
+  namespace: {{ .Release.Namespace }}
+---
+{{- end }}
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
