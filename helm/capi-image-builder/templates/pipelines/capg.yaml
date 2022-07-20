@@ -15,6 +15,12 @@ spec:
   - name: credentials
     description: "GCP credentials containing the required `sa.json` file for authenticating"
     optional: false
+  - name: vars
+    description: "Shared workspace for passing vars betweeen task steps"
+    optional: false
+  - name: output
+    description: "The location where VM images are saved to"
+    optional: false
   tasks:
     - name: build-capi-image
       timeout: 6h
@@ -34,9 +40,9 @@ spec:
       - name: credentials
         workspace: credentials
       - name: output
-        emptyDir: {}
+        workspace: output
       - name: vars
-        emptyDir: {}
+        workspace: vars
 
     - name: share-images
       taskRef:
