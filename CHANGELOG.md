@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Don't print newline at end of results string
+- Set fsGroup so task can create new files in workspace
+- Ensure failed make task fails the tekton task
+- Base docker image on latest upstream patch
+
 ## [1.0.10] - 2022-07-20
 
 ### Fixed
