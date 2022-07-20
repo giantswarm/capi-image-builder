@@ -7,7 +7,7 @@ project:
 image:
   registry: quay.io
   name: giantswarm/capi-image-builder
-  tag: 1.0.9
+  tag: 1.0.11
 
 s3:
   image:
