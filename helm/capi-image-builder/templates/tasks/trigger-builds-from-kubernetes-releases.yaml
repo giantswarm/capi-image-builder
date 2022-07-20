@@ -15,6 +15,7 @@ spec:
     - name: trigger-builds
       image: bash:5
       script: |
+        #!/usr/bin/env bash
         VERSIONS=($(curl --silent https://api.github.com/repos/kubernetes/kubernetes/releases | jq -r '. | map({tag_name,published_at,prerelease}) | .[] | select(.prerelease==false) | select(.published_at | strptime("%Y-%m-%dT%H:%M:%SZ")|mktime >= (now-$(params.SINCE))) | .tag_name'))
 
         for v in "${VERSIONS[@]}"; do

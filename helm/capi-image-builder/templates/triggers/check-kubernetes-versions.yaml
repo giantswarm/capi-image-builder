@@ -11,7 +11,7 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: trigger-capi-builds
+      generateName: trigger-capi-builds-
     spec:
       pipelineRef:
         name: {{ include "name" . }}-trigger-capi-builds
