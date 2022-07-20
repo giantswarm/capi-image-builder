@@ -40,6 +40,8 @@ spec:
       retries: 1
       taskRef:
         name: {{ include "name" . }}-build-capi-image
+      runAfter:
+        - check-image-exists
       params:
         - name: KUBERNETES_VERSION
           value: $(params.KUBERNETES_VERSION)

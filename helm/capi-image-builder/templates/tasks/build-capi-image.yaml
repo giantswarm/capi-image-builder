@@ -35,19 +35,21 @@ spec:
     - name: build-vars
       image: quay.io/giantswarm/docker-kubectl:1.24.2
       script: |
-        VERSION_PARTS=($(echo $(params.KUBERNETES_VERSION) | tr "." "\n"))
-        VERSION_MAJOR=${VERSION_PARTS[0]}
+        set -- $(echo $(params.KUBERNETES_VERSION) | tr "." "\n")
+        VERSION_MAJOR=${1}
         VERSION_MAJOR=${VERSION_MAJOR#v} # Strip any `v` prefix
-        VERSION_MINOR=${VERSION_PARTS[1]}
+        VERSION_MINOR=${2}
 
-        echo '{
+        cat <<END > default_vars.json
+        {
           "build_timestamp": "gs",
           "kubernetes_deb_version": "$(params.KUBERNETES_VERSION)-00",
           "kubernetes_rpm_version": "$(params.KUBERNETES_VERSION)-0",
           "kubernetes_semver": "v$(params.KUBERNETES_VERSION)",
           "kubernetes_series": "v${VERSION_MAJOR}.${VERSION_MINOR}",
           "output_directory": "$(workspaces.output.path)/cluster-api-v$(params.KUBERNETES_VERSION)"
-        }' > default_vars.json
+        }
+        END
         echo "Default Packer vars:"
         cat default_vars.json
 
@@ -76,6 +78,7 @@ spec:
       - name: PACKER_LOG
         value: "1"
       script: |
+        #!/usr/bin/env bash
         source $(workspaces.vars.path)/env
         make $(params.MAKE_TARGET)
         # If a local file has been created (e.g. for CAPO) we'll also generate a sha256 for it

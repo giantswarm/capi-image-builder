@@ -29,8 +29,6 @@ spec:
           secretName: {{ include "name" . }}-aws-credentials
       - name: output
         volumeClaimTemplate:
-          metadata:
-            generateName: capo-output-$(tt.params.KUBERNETES_VERSION)-
           spec:
             accessModes:
               - ReadWriteOnce

@@ -34,6 +34,9 @@ spec:
         # Ensure we have the expected credentials file
         test -f ${GOOGLE_APPLICATION_CREDENTIALS}
 
+        gcloud auth login --cred-file=${GOOGLE_APPLICATION_CREDENTIALS}
+        gcloud config set project ${GCP_PROJECT_ID}
+
         KUBE_VERSION=$(echo "$(params.KUBERNETES_VERSION)" | tr '.' '-')
 
         IMAGES=$(gcloud compute images list --filter="name~'$(params.IMAGE_NAME_PATTERN)' AND selfLink~'.*/$(params.GCP_PROJECT_ID)/.*'" --format="value(name)")

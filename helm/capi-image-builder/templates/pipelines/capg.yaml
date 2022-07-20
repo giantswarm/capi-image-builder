@@ -22,7 +22,7 @@ spec:
     description: "The location where VM images are saved to"
     optional: false
   tasks:
-    - name: build-capi-image
+    - name: build-capi-image-ubuntu-1804
       timeout: 6h
       retries: 1
       taskRef:
@@ -31,7 +31,29 @@ spec:
         - name: KUBERNETES_VERSION
           value: $(params.KUBERNETES_VERSION)
         - name: MAKE_TARGET
-          value: "build-gce-all"
+          value: "build-gce-ubuntu-1804"
+        - name: ENV_VARS
+          value: |
+            export GCP_PROJECT_ID=giantswarm-vm-images
+            export GOOGLE_APPLICATION_CREDENTIALS=/config/credentials/sa.json
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: output
+        workspace: output
+      - name: vars
+        workspace: vars
+
+    - name: build-capi-image-ubuntu-2004
+      timeout: 6h
+      retries: 1
+      taskRef:
+        name: {{ include "name" . }}-build-capi-image
+      params:
+        - name: KUBERNETES_VERSION
+          value: $(params.KUBERNETES_VERSION)
+        - name: MAKE_TARGET
+          value: "build-gce-ubuntu-2004"
         - name: ENV_VARS
           value: |
             export GCP_PROJECT_ID=giantswarm-vm-images
@@ -46,10 +68,13 @@ spec:
 
     - name: share-images
       taskRef:
-        name: share-capg-images
+        name: {{ include "name" . }}-share-capg-images
       runAfter:
-        - build-capi-image
-      params: []
+        - build-capi-image-ubuntu-1804
+        - build-capi-image-ubuntu-2004
+      params:
+        - name: KUBERNETES_VERSION
+          value: $(params.KUBERNETES_VERSION)
       retries: 1
       workspaces:
       - name: credentials

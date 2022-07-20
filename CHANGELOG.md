@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- GCP share images authentication
+- PSP needed for affinity assistant
+- Split CAPG ubuntu builds into specific steps
+
 ## [1.0.9] - 2022-07-20
 
 ### Fixed
