@@ -84,7 +84,7 @@ spec:
         make $(params.MAKE_TARGET)
 
         # If a local file has been created (e.g. for CAPO) we'll also generate a sha256 for it
-        for file in $(find -f "$(workspaces.output.path)/*")
+        for file in $(find "$(workspaces.output.path)/" -type f)
         do
           sha256sum ${file} > ${file}.sha256sums
         done
