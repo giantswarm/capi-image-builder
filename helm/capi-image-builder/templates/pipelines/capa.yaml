@@ -35,6 +35,10 @@ spec:
         - name: PACKER_VARS_FILE
           value: |
             {"shared_credentials_file": "/config/credentials/credentials", "profile": "ami", "ami_regions": "eu-west-1,eu-central-1,us-east-1,us-west-1", "aws_region": "eu-central-1", "ami_description": "Cluster-API Ubuntu AMI for Kubernetes v$(params.KUBERNETES_VERSION)"}
+        - name: ENV_VARS
+          value: |
+            export AWS_SHARED_CREDENTIALS_FILE=/config/credentials/credentials
+            export AWS_PROFILE=ami
       workspaces:
       - name: credentials
         workspace: credentials
@@ -56,6 +60,10 @@ spec:
         - name: PACKER_VARS_FILE
           value: |
             {"shared_credentials_file": "/config/credentials/credentials", "profile": "ami", "ami_regions": "eu-west-1,eu-central-1,us-east-1,us-west-1", "aws_region": "eu-central-1", "ami_description": "Cluster-API Flatcar AMI for Kubernetes v$(params.KUBERNETES_VERSION)"}
+        - name: ENV_VARS
+          value: |
+            export AWS_SHARED_CREDENTIALS_FILE=/config/credentials/credentials
+            export AWS_PROFILE=ami
       workspaces:
       - name: credentials
         workspace: credentials
