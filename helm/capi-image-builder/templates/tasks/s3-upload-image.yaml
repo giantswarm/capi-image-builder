@@ -19,7 +19,4 @@ spec:
       image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
       script: |
         set -x
-        files=($(find $(workspaces.source.path)))
-        for file in "${files[@]}"; do
-          aws s3 $(cat $(workspaces.credentials.path)/cli-params) cp ${file} s3://$(cat $(workspaces.credentials.path)/bucket-name)/
-        done
+        aws s3 $(cat $(workspaces.credentials.path)/cli-params) cp --recursive $(workspaces.source.path) s3://$(cat $(workspaces.credentials.path)/bucket-name)/
