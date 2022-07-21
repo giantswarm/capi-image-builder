@@ -78,7 +78,7 @@ spec:
         set -e
         source $(workspaces.vars.path)/env
 
-        # Symlink the `./output` directory to our output workspace
+        # Symlink the `./output` directory to our output workspace (instead of using `mv` after built as it would be slower to copy the image across)
         ln -s $(workspaces.output.path) ./output
 
         make $(params.MAKE_TARGET)
