@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2022-07-21
+
 ### Fixed
 
 - Check correct location when generating sha256
@@ -112,7 +114,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.13...HEAD
+[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.13...v1.1.0
 [1.0.13]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.12...v1.0.13
 [1.0.12]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.11...v1.0.12
 [1.0.11]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.10...v1.0.11
