@@ -1,0 +1,65 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: {{ include "name" . }}-build-capa-image
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+spec:
+  params:
+  - name: KUBERNETES_VERSION
+    type: string
+    description: "The Kubernetes version to build for - e.g. 1.24.3 (Note, if a `v` prefix is added, this will be stripped off in the build task)"
+  workspaces:
+  - name: credentials
+    description: "AWS credentials file containing an `[ami]` profile"
+    optional: false
+  - name: vars
+    description: "Shared workspace for passing vars betweeen task steps"
+    optional: false
+  - name: output
+    description: "The location where VM images are saved to"
+    optional: false
+  tasks:
+    - name: build-capi-image-ubuntu-2004
+      timeout: 6h
+      retries: 1
+      taskRef:
+        name: {{ include "name" . }}-build-capi-image
+      params:
+        - name: KUBERNETES_VERSION
+          value: $(params.KUBERNETES_VERSION)
+        - name: MAKE_TARGET
+          value: "build-ami-ubuntu-2004"
+        - name: PACKER_VARS_FILE
+          value: |
+            {"shared_credentials_file": "/config/credentials/credentials", "profile": "ami", "ami_regions": "eu-west-1,eu-central-1,us-east-1,us-west-1", "aws_region": "eu-central-1", "ami_description": "Cluster-API Ubuntu AMI for Kubernetes v$(params.KUBERNETES_VERSION)"}
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: output
+        workspace: output
+      - name: vars
+        workspace: vars
+
+    - name: build-capi-image-flatcar
+      timeout: 6h
+      retries: 1
+      taskRef:
+        name: {{ include "name" . }}-build-capi-image
+      params:
+        - name: KUBERNETES_VERSION
+          value: $(params.KUBERNETES_VERSION)
+        - name: MAKE_TARGET
+          value: "build-ami-flatcar"
+        - name: PACKER_VARS_FILE
+          value: |
+            {"shared_credentials_file": "/config/credentials/credentials", "profile": "ami", "ami_regions": "eu-west-1,eu-central-1,us-east-1,us-west-1", "aws_region": "eu-central-1", "ami_description": "Cluster-API Flatcar AMI for Kubernetes v$(params.KUBERNETES_VERSION)"}
+      workspaces:
+      - name: credentials
+        workspace: credentials
+      - name: output
+        workspace: output
+      - name: vars
+        workspace: vars
