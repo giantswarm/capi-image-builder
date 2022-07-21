@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.13] - 2022-07-21
+
 ### Changed
 
 - Removed `PACKER_LOG` env var to reduce amount of log output
@@ -96,7 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.12...HEAD
+[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.13...HEAD
+[1.0.13]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.12...v1.0.13
 [1.0.12]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.11...v1.0.12
 [1.0.11]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.10...v1.0.11
 [1.0.10]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.9...v1.0.10
