@@ -26,7 +26,7 @@ spec:
       params:
       - name: IMAGE
         # We pass the sha256 rather than the image itself so we can check that the process completed (sha is the last setp)
-        value: cluster-api-v$(params.KUBERNETES_VERSION).sha256sums
+        value: ubuntu-2004-kube-v$(params.KUBERNETES_VERSION)/ubuntu-2004-kube-v$(params.KUBERNETES_VERSION).sha256sums
       workspaces:
       - name: credentials
         workspace: credentials
@@ -47,6 +47,8 @@ spec:
           value: $(params.KUBERNETES_VERSION)
         - name: MAKE_TARGET
           value: "build-qemu-ubuntu-2004"
+        - name: IMAGE_NAME
+          value: ubuntu-2004-kube-v$(params.KUBERNETES_VERSION)
         - name: PACKER_VARS_FILE
           value: |
             {"memory": "4096","cpus": "4","accelerator": "none","disk_compression": "true","disk_discard": "unmap"}

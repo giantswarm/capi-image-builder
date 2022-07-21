@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Check correct location when generating sha256
+- Check correct location for CAPO image existing in S3 bucket
+
+### Added
+
+- Configure the built VM image name
+- Enable debug packer log on rety of build task
+
 ## [1.0.13] - 2022-07-21
 
 ### Changed
