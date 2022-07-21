@@ -75,8 +75,6 @@ spec:
       env:
       - name: PACKER_VAR_FILES
         value: $(workspaces.vars.path)/vars.json
-      - name: PACKER_LOG
-        value: "1"
       script: |
         #!/usr/bin/env bash
         set -e
