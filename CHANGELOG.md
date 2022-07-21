@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Removed `PACKER_LOG` env var to reduce amount of log output
+
 ## [1.0.12] - 2022-07-21
 
 ### Fixed
