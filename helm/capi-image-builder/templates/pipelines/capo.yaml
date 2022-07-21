@@ -9,6 +9,9 @@ spec:
   params:
   - name: KUBERNETES_VERSION
     type: string
+  - name: OS_STRING
+    type: string
+    default: "ubuntu-2004"
   workspaces:
   - name: credentials
     description: "The AWS S3 credentials and details needed to upload built images to an S3 bucket"
@@ -26,7 +29,7 @@ spec:
       params:
       - name: IMAGE
         # We pass the sha256 rather than the image itself so we can check that the process completed (sha is the last setp)
-        value: ubuntu-2004-kube-v$(params.KUBERNETES_VERSION)/ubuntu-2004-kube-v$(params.KUBERNETES_VERSION).sha256sums
+        value: $(params.OS_STRING)-kube-v$(params.KUBERNETES_VERSION)/$(params.OS_STRING)-kube-v$(params.KUBERNETES_VERSION).sha256sums
       workspaces:
       - name: credentials
         workspace: credentials
@@ -46,9 +49,7 @@ spec:
         - name: KUBERNETES_VERSION
           value: $(params.KUBERNETES_VERSION)
         - name: MAKE_TARGET
-          value: "build-qemu-ubuntu-2004"
-        - name: IMAGE_NAME
-          value: ubuntu-2004-kube-v$(params.KUBERNETES_VERSION)
+          value: "build-qemu-$(params.OS_STRING)"
         - name: PACKER_VARS_FILE
           value: |
             {"memory": "4096","cpus": "4","accelerator": "none","disk_compression": "true","disk_discard": "unmap"}

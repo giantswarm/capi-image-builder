@@ -14,8 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Configure the built VM image name
 - Enable debug packer log on rety of build task
+- OS_STRING param to CAPO pipeline to easily change VM base OS
+
+### Changed
+
+- Don't override the default output directory and instead symlink the expected location to our workspace
 
 ## [1.0.13] - 2022-07-21
 
