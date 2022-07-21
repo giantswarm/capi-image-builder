@@ -42,6 +42,18 @@ spec:
       template:
         ref: {{ include "name" . }}-capo-trigger-template
 
+    - name: build-capa-image
+      interceptors:
+      - ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: has(body.provider) == false || body.provider == "capa"
+      bindings:
+      - ref: {{ include "name" . }}-capi-trigger-template-binding
+      template:
+        ref: {{ include "name" . }}-capa-trigger-template
+
 ---
 
 apiVersion: triggers.tekton.dev/v1beta1

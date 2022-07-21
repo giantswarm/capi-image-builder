@@ -19,5 +19,9 @@ s3:
   endpointURL: ""
   bucketName: ""
 
+ami:
+  accessKeyId: ""
+  secretAccessKey: ""
+
 gcp:
   serviceAccountCredentialsJSON: ""

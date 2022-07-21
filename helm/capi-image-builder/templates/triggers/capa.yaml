@@ -1,0 +1,33 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: {{ include "name" . }}-capa-trigger-template
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels.common" . | nindent 4 }}
+spec:
+  params:
+  - name: KUBERNETES_VERSION
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: build-capa-image-$(tt.params.KUBERNETES_VERSION)-
+    spec:
+      timeouts:
+        pipeline: "8h0m0s"
+        tasks: "6h0m0s"
+      pipelineRef:
+        name: {{ include "name" . }}-build-capa-image
+      serviceAccountName: {{ include "name" . }}-capi-builder
+      params:
+      - name: KUBERNETES_VERSION
+        value: $(tt.params.KUBERNETES_VERSION)
+      workspaces:
+      - name: credentials
+        secret:
+          secretName: {{ include "name" . }}-aws-credentials
+      - name: vars
+        emptyDir: {}
+      - name: output
+        emptyDir: {}
