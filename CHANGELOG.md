@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Upload to S3 recursively all files in the output workspace
+
 ## [1.0.11] - 2022-07-21
 
 ### Fixed
