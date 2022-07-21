@@ -23,6 +23,9 @@ spec:
   - name: PACKER_VARS_FILE
     type: string
     default: "{}"
+  - name: IMAGE_NAME
+    type: string
+    default: "cluster-api-v$(params.KUBERNETES_VERSION)"
   workspaces:
   - name: credentials
     mountPath: /config/credentials
@@ -47,7 +50,7 @@ spec:
           "kubernetes_rpm_version": "$(params.KUBERNETES_VERSION)-0",
           "kubernetes_semver": "v$(params.KUBERNETES_VERSION)",
           "kubernetes_series": "v${VERSION_MAJOR}.${VERSION_MINOR}",
-          "output_directory": "$(workspaces.output.path)/cluster-api-v$(params.KUBERNETES_VERSION)"
+          "output_directory": "$(workspaces.output.path)/$(params.IMAGE_NAME)"
         }
         END
         echo "Default Packer vars:"
@@ -75,12 +78,16 @@ spec:
       env:
       - name: PACKER_VAR_FILES
         value: $(workspaces.vars.path)/vars.json
+      - name: PACKER_LOG
+        value: $(context.task.retry-count)
       script: |
         #!/usr/bin/env bash
         set -e
         source $(workspaces.vars.path)/env
+
         make $(params.MAKE_TARGET)
+
         # If a local file has been created (e.g. for CAPO) we'll also generate a sha256 for it
-        if [ -f "cluster-api-v$(params.KUBERNETES_VERSION)" ]; then
-          sha256sum cluster-api-v$(params.KUBERNETES_VERSION) > $(workspaces.output.path)/cluster-api-v$(params.KUBERNETES_VERSION).sha256sums
+        if [ -f "$(workspaces.output.path)/$(params.IMAGE_NAME)" ]; then
+          sha256sum $(workspaces.output.path)/$(params.IMAGE_NAME) > $(workspaces.output.path)/$(params.IMAGE_NAME).sha256sums
         fi
