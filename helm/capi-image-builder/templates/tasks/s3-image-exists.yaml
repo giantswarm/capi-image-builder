@@ -26,7 +26,7 @@ spec:
         }
 
         if check_exists; then
-          echo "true" > $(results.image-exists.path)
+          printf "true" > $(results.image-exists.path)
         else
-          echo "false" > $(results.image-exists.path)
+          printf "false" > $(results.image-exists.path)
         fi

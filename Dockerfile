@@ -1,4 +1,4 @@
-FROM k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.11
+FROM k8s.gcr.io/scl-image-builder/cluster-node-image-builder-amd64:v0.1.12
 
 USER root
 ENV DEBIAN_FRONTEND noninteractive
