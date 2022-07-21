@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2022-07-21
+
 ### Added
 
 - CAPA build pipeline
@@ -118,7 +120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/giantswarm/capi-image-builder/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/giantswarm/capi-image-builder/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.13...v1.1.0
 [1.0.13]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.12...v1.0.13
 [1.0.12]: https://github.com/giantswarm/capi-image-builder/compare/v1.0.11...v1.0.12
